@@ -8,38 +8,47 @@ import (
 	"net/http"
 )
 
-func Register(c *gin.Context){
+func Register(c *gin.Context) {
 	db := common.GetDB()
-	//获取参数
 
+	//获取参数
 	var requestUser model.User
 	c.Bind(&requestUser)
 	userName := requestUser.UserName
 	phoneNumber := requestUser.PhoneNumber
 	passWord := requestUser.Password
 
+	//判断输入的有效性
+	if userName == "" || phoneNumber == "" || passWord == "" {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code": 500,
+			"msg":  "不是有效信息",
+		})
+		return
+	}
+
 	//数据验证
 
 	var user model.User
-	db.Where("phone_number = ?",phoneNumber).First(&user)
-	if user.ID !=0 {
-		c.JSON(http.StatusOK,gin.H{
-			"code" : 422,
-			"msg" : "用户已存在",
+	db.Where("phone_number = ?", phoneNumber).First(&user)
+	if user.ID != 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 422,
+			"msg":  "用户已存在",
 		})
 		return
 	}
 
 	//密码加密
 
-	hashedPassword,_ := bcrypt.GenerateFromPassword([]byte(passWord),bcrypt.DefaultCost)
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(passWord), bcrypt.DefaultCost)
 
 	//创建用户
 
 	newUser := model.User{
-		UserName :   userName,
+		UserName:    userName,
 		PhoneNumber: phoneNumber,
-		Password: string(hashedPassword),
+		Password:    string(hashedPassword),
 		Avatar:      "/images/default_avatar.png",
 		Collects:    model.Array{},
 		Following:   model.Array{},
@@ -49,13 +58,13 @@ func Register(c *gin.Context){
 
 	//返回结果
 
-	c.JSON(http.StatusOK,gin.H{
-		"code" : 200,
-		"msg" : "注册成功",
+	c.JSON(http.StatusOK, gin.H{
+		"code": 200,
+		"msg":  "注册成功",
 	})
 }
 
-func Login(c *gin.Context){
+func Login(c *gin.Context) {
 	db := common.GetDB()
 
 	//获取参数
@@ -68,35 +77,35 @@ func Login(c *gin.Context){
 	//数据验证
 
 	var user model.User
-	db.Where("phone_number = ?",phoneNumber).First(&user)
-	if user.ID==0{
-		c.JSON(http.StatusOK,gin.H{
-			"code" : 422,
-			"msg" : "用户不存在",
+	db.Where("phone_number = ?", phoneNumber).First(&user)
+	if user.ID == 0 {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 422,
+			"msg":  "用户不存在",
 		})
-	 return
+		return
 	}
 
 	//判断密码是否正确
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password),[]byte(passWord));err != nil{
-		c.JSON(http.StatusOK,gin.H{
-			"code" : 422,
-			"msg" : "密码错误",
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(passWord)); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 422,
+			"msg":  "密码错误",
 		})
-	return
+		return
 	}
 
 	//发放token
 
-	token,err := common.RleaseToken(user)
-	if err !=nil{
-		c.JSON(http.StatusOK,gin.H{
-			"code":200,
-			"data":gin.H{
-				"token" :token,
+	token, err := common.RleaseToken(user)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code": 200,
+			"data": gin.H{
+				"token": token,
 			},
-			"msg" : "登陆成功",
+			"msg": "登陆成功",
 		})
 		return
 	}
