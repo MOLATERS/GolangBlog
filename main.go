@@ -8,11 +8,11 @@ import (
 	"net/http"
 )
 
-func main(){
+func main() {
 	db := common.InitDB()
 	defer db.Close()
-	r:=gin.Default()
-	r.StaticFS("/images",http.Dir("/static/images"))
+	r := gin.Default()
+	r.StaticFS("./images", http.Dir("./static/images"))
 	routes.CollectRoutes(r)
 	panic(r.Run(":8080"))
 }

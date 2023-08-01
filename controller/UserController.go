@@ -99,7 +99,7 @@ func Login(c *gin.Context) {
 	//发放token
 
 	token, err := common.RleaseToken(user)
-	if err != nil {
+	if err == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"code": 200,
 			"data": gin.H{

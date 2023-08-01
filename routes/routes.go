@@ -13,5 +13,7 @@ func CollectRoutes(r *gin.Engine) *gin.Engine {
 	r.GET("/user", middleware.AuthMiddleware(), controller.GetInfo) //登录获取用户信息
 	r.POST("/upload", controller.Upload)                            //用于图片传输
 	r.GET("/images", controller.ShowImage)
+	r.GET("/category", controller.SearchCategory)
+	r.GET("/category/:id", controller.SearchCategoryName)
 	return r
 }
