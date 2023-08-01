@@ -15,12 +15,14 @@ func SearchCategory(c *gin.Context) {
 	var categories []model.Category
 	if err := db.Find(&categories).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":       200,
 			"categories": nil,
 			"msg":        "查询失败",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
+		"code":       200,
 		"categories": categories,
 		"msg":        "查找成功",
 	})
