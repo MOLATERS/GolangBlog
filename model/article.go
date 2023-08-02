@@ -1,6 +1,9 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/google/uuid"
+	"github.com/jinzhu/gorm"
+)
 
 /* model/article.go */
 type Article struct {
@@ -25,5 +28,5 @@ type ArticleInfo struct {
 
 // BeforeCreate 在创建文章之前将id赋值
 func (a *Article) BeforeCreate(s *gorm.Scope) error {
-	return s.SetColumn("ID", uuid.NewV4())
+	return s.SetColumn("ID", uuid.New())
 }
