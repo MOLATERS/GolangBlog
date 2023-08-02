@@ -34,18 +34,18 @@ func SearchCategoryName(c *gin.Context) {
 	var category model.Category
 	// 获取path中的分类id
 	categoryId := c.Params.ByName("id")
-	if err := db.Where("id = ?", categoryId).First(&category).Error; err != nil {
+	if err := db.Where("id = ?", categoryId).Find(&category).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":         500,
-			"categoryName": "",
-			"msg":          "查找失败",
+			"code": 500,
+			"data": "",
+			"msg":  "查找失败",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"code": http.StatusOK,
+		"code": 200,
 		"data": gin.H{
-			"categoryName": category.CategoryName,
+			"name": category.CategoryName,
 		},
 		"msg": "查找成功",
 	})
