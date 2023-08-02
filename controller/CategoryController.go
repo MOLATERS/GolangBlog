@@ -34,9 +34,7 @@ func SearchCategoryName(c *gin.Context) {
 	var category model.Category
 	// 获取path中的分类id
 	categoryId := c.Params.ByName("id")
-	sql := "SELECT * FROM categories WHERE id = ?"
-	//db.Where("id = ?", categoryId).First(&category).Error
-	if err := db.Raw(sql, categoryId).First(&category).Error; err != nil {
+	if err := db.Where("id = ?", categoryId).First(&category).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code": 500,
 			"data": "",
